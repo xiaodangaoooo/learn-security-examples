@@ -31,5 +31,27 @@ This will create a database in MongoDB called __infodisclosure__. Verify its pre
 Answer the following:
 
 1. Briefly explain the potential vulnerabilities in **insecure.ts**
+NoSQL injection vulnerability in the /userinfo endpoint.
+No input validation for the username parameter.
+Direct use of user input in database queries.
 2. Briefly explain how a malicious attacker can exploit them.
+Attacker can send a request like:
+GET /userinfo?username[$ne]=null
+Then this query becomes:
+User.findOne({ username: { $ne: null } })
+Which returns all user records since username is not equal to null and exposes sensitive user information.
 3. Briefly explain the defensive techniques used in **secure.ts** to prevent the information disclosure vulnerability?
+Input Type Validation:
+if (typeof username !== 'string') {
+    return res.status(400).send('Invalid username format');
+}
+Input Sanitization:
+const sanitizedUsername = username.replace(/[^\w\s]/gi, '');
+
+Error Handling:
+try {
+    // Database query with sanitized input
+} catch (error) {
+    console.error('Error querying database:', error);
+    res.status(500).send('Internal server error');
+}

@@ -31,5 +31,23 @@ This will create a database in MongoDB called __infodisclosure__. Verify its pre
 Answer the following:
 
 1. Briefly explain the potential vulnerabilities in **insecure.ts** that can lead to a DoS attack.
+No rate limiting on the /userinfo endpoint.
+No request timeout implementation.
+No error handling for failed requests.
+Allows unlimited requests from a single IP.
+
 2. Briefly explain how a malicious attacker can exploit them.
+Attacker could create a script to flood the server:
+const attack = async () => {
+  while(true) {
+    await fetch('http://server/userinfo?id=123');
+  }
+}
+This could overwhelm the server by exhausting database connections, consuming server memory, overloading CPU.
+
 3. Briefly explain the defensive techniques used in **secure.ts** to prevent the DoS vulnerability?
+The secure version prevents DoS attacks by:
+implementing rate limiting per IP address
+adding proper error handling
+using appropriate HTTP status codes
+limiting the number of requests in a time window
